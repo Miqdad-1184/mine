@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seberapa Sering Aku?</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;600;800&display=swap');
+
+    :root{
+      --text: #ffffff;
+      --muted: rgba(255,255,255,.75);
+      --glass: rgba(255,255,255,.10);
+      --glass-border: rgba(255,255,255,.22);
+      --shadow: rgba(0,0,0,.25);
+    }
+
+    *{ box-sizing:border-box; margin:0; padding:0; }
+    body{
+      font-family: 'Outfit', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+
+      background: linear-gradient(120deg,
+        #ff6fd8,
+        #a18cd1,
+        #6dd5ed,
+        #84fab0,
+        #ffd3a5
+      );
+      background-size: 400% 400%;
+      animation: bgMove 14s ease-in-out infinite;
+
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      padding: 2rem 1.25rem 2.5rem;
+      position:relative;
+    }
+
+    @keyframes bgMove{
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(rgba(255,255,255,.18) 1px, transparent 1px),
+        radial-gradient(rgba(0,0,0,.06) 1px, transparent 1px);
+      background-size: 22px 22px, 34px 34px;
+      background-position: 0 0, 10px 16px;
+      opacity: .45;
+      mix-blend-mode: overlay;
+    }
+
+    #bg-hearts{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index: 0;
+      overflow:hidden;
+    }
+    .float-heart{
+      position:absolute;
+      bottom:-30px;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: .0;
+      font-size: 16px;
+      filter: drop-shadow(0 6px 14px rgba(0,0,0,.25));
+      animation: floatUp linear forwards;
+      user-select:none;
+      will-change: transform, opacity;
+    }
+    @keyframes floatUp{
+      0%   { transform: translate(-50%, 0) rotate(0deg); opacity: 0; }
+      12%  { opacity: .55; }
+      100% { transform: translate(calc(-50% + var(--drift)), -120vh) rotate(var(--rot)); opacity: 0; }
+    }
+
+    header.hero{
+      width: 100%;
+      max-width: 1100px;
+      z-index: 2;
+      text-align:center;
+      margin-top: .5rem;
+      margin-bottom: 1.75rem;
+    }
+
+    h1{
+      font-size: clamp(1.8rem, 3.5vw, 3rem);
+      font-weight: 800;
+      letter-spacing: .5px;
+      text-transform: lowercase;
+      display:inline-block;
+
+      background: linear-gradient(to right, #fff, rgba(255,255,255,.75));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+
+      text-shadow: 0 10px 30px rgba(0,0,0,.22);
+    }
+
+    .subtitle{
+      margin-top: .6rem;
+      color: var(--muted);
+      font-weight: 600;
+      font-size: .98rem;
+    }
+
+    .grid{
+      width:100%;
+      max-width: 1100px;
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 1.25rem;
+      z-index:2;
+    }
+
+    .card{
+      position:relative;
+      border-radius: 20px;
+      padding: 16px 14px 14px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 16px 40px var(--shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      overflow:hidden;
+      transform: translateZ(0);
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+
+    .card::after{
+      content:"";
+      position:absolute;
+      inset:-40px;
+      background:
+        radial-gradient(rgba(255,255,255,.18) 1px, transparent 1px);
+      background-size: 26px 26px;
+      opacity: .35;
+      transform: rotate(10deg);
+      animation: sparklePan 10s linear infinite;
+      pointer-events:none;
+    }
+
+    @keyframes sparklePan{
+      0%   { background-position: 0 0; }
+      100% { background-position: 120px 240px; }
+    }
+
+    .card:hover{
+      transform: translateY(-8px) scale(1.01);
+      box-shadow:
+        0 22px 55px rgba(0,0,0,.30),
+        0 0 0 1px rgba(255,255,255,.22),
+        0 0 28px var(--liquid-color);
+    }
+
+    .badge{
+      position:absolute;
+      top: 12px;
+      left: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: .72rem;
+      font-weight: 800;
+      letter-spacing: .3px;
+      text-transform: uppercase;
+      background: rgba(0,0,0,.22);
+      border: 1px solid rgba(255,255,255,.18);
+      z-index: 3;
+    }
+
+    .bottle-wrapper{
+      width: 72px;
+      height: 150px;
+      margin: 18px auto 12px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .fountain-container{
+    position:absolute;
+    top: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 60px;
+    pointer-events:none;
+    z-index: 6;
+    }
+
+    .droplet{
+    position:absolute;
+    left: 50%;
+    top: 50%;
+    font-size: 14px;
+    line-height: 1;
+    opacity: 0;
+    color: var(--liquid-color);
+    filter: drop-shadow(0 0 10px var(--liquid-color));
+    will-change: transform, opacity;
+    user-select:none;
+    }
+
+    .cap{
+      position:absolute;
+      top:-10px;
+      left:50%;
+      transform: translateX(-50%);
+      width: 46px;
+      height: 14px;
+      border-radius: 6px;
+      background: linear-gradient(180deg, rgba(255,255,255,.35), rgba(0,0,0,.35));
+      border: 1px solid rgba(255,255,255,.25);
+      box-shadow: 0 8px 18px rgba(0,0,0,.25);
+      z-index: 5;
+    }
+
+    .bottle{
+      width: 100%;
+      height: 100%;
+      border-radius: 16px 16px 18px 18px;
+      border: 1px solid rgba(255,255,255,.35);
+      background: rgba(255,255,255,.08);
+      position: relative;
+      overflow:hidden;
+      z-index:4;
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,.06);
+    }
+
+    .bottle::before{
+      content:"";
+      position:absolute;
+      top: 10px;
+      left: 10px;
+      width: 18px;
+      height: calc(100% - 20px);
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(255,255,255,.35), transparent);
+      opacity: .55;
+      filter: blur(.2px);
+      pointer-events:none;
+    }
+
+    .liquid{
+      position:absolute;
+      bottom:0;
+      left:0;
+      width:100%;
+      height:0%;
+      background:
+        radial-gradient(circle at 25% 20%, rgba(255,255,255,.22) 0 22%, transparent 23% 100%),
+        radial-gradient(circle at 70% 55%, rgba(255,255,255,.18) 0 18%, transparent 19% 100%),
+        linear-gradient(180deg, rgba(0,0,0,.25), var(--liquid-color));
+      box-shadow: 0 0 26px var(--liquid-color);
+      transition: height 1.25s cubic-bezier(.2,.9,.2,1);
+      overflow:hidden;
+    }
+
+    .liquid::after{
+      content:"";
+      position:absolute;
+      top:-8px;
+      left:-20%;
+      width:140%;
+      height: 18px;
+      background: rgba(255,255,255,.28);
+      border-radius: 999px;
+      filter: blur(.2px);
+      opacity: .85;
+      animation: wave 2.6s ease-in-out infinite;
+    }
+
+    @keyframes wave{
+      0%   { transform: translateX(0) scaleX(1); }
+      50%  { transform: translateX(10px) scaleX(1.04); }
+      100% { transform: translateX(0) scaleX(1); }
+    }
+
+    .label{
+      text-align:center;
+      font-weight: 800;
+      font-size: .88rem;
+      line-height: 1.25;
+      color: rgba(255,255,255,.78);
+      text-shadow: 0 8px 18px rgba(0,0,0,.22);
+      z-index:2;
+      position:relative;
+      margin-top: 2px;
+      min-height: 2.2em;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 0 6px;
+    }
+
+    .label.active{
+      color:#fff;
+      text-shadow: 0 0 18px var(--liquid-color);
+    }
+
+    .meta{
+      margin-top: 8px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      color: rgba(255,255,255,.92);
+      font-weight: 700;
+      z-index:2;
+      position:relative;
+    }
+
+    .percent{
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(0,0,0,.20);
+      border: 1px solid rgba(255,255,255,.18);
+      font-size: .82rem;
+    }
+
+    .emoji{
+      font-size: 1.1rem;
+      filter: drop-shadow(0 10px 18px rgba(0,0,0,.25));
+    }
+
+    .progress{
+      margin-top: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.18);
+      overflow:hidden;
+      z-index:2;
+      position:relative;
+    }
+
+    .bar{
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(255,255,255,.30), var(--liquid-color));
+      box-shadow: 0 0 18px var(--liquid-color);
+      transition: width 1.25s cubic-bezier(.2,.9,.2,1);
+    }
+
+    footer.footer{
+      margin-top: 1.75rem;
+      color: rgba(255,255,255,.78);
+      font-weight: 600;
+      text-align:center;
+      z-index:2;
+      max-width: 900px;
+    }
+
+    footer.footer small{
+      display:block;
+      margin-top: .4rem;
+      color: rgba(255,255,255,.65);
+      font-weight: 600;
+    }
+
+    @keyframes spurt-left {
+      0%   { transform: translate(-50%, -50%) translate(0, 0) scale(1); opacity: 1; }
+      60%  { transform: translate(-50%, -50%) translate(-28px, -60px) scale(.9); opacity: .85; }
+      100% { transform: translate(-50%, -50%) translate(-60px, 25px) scale(.55); opacity: 0; }
+    }
+
+    @keyframes spurt-right {
+      0%   { transform: translate(-50%, -50%) translate(0, 0) scale(1); opacity: 1; }
+      60%  { transform: translate(-50%, -50%) translate(28px, -60px) scale(.9); opacity: .85; }
+      100% { transform: translate(-50%, -50%) translate(60px, 25px) scale(.55); opacity: 0; }
+    }
+
+    @keyframes spurt-center {
+      0%   { transform: translate(-50%, -50%) translate(0, 0) scale(1); opacity: 1; }
+      60%  { transform: translate(-50%, -50%) translate(0, -72px) scale(.95); opacity: .85; }
+      100% { transform: translate(-50%, -50%) translate(0, 2px) scale(.6); opacity: 0; }
+    }
+
+    @media (max-width: 640px){
+      .grid{ grid-template-columns: repeat(3, 1fr); gap: .9rem; }
+      .bottle-wrapper{ width: 56px; height: 120px; margin: 16px auto 10px; }
+      .label{ font-size: .72rem; }
+      .percent{ font-size: .74rem; padding: 5px 8px; }
+      .badge{ font-size: .64rem; padding: 5px 8px; }
+      .subtitle{ font-size: .9rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      body{ animation: none; }
+      .card, .card:hover{ transition: none; }
+      .card::after{ animation: none; }
+      .liquid, .bar{ transition: none; }
+      .liquid::after{ animation: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="bg-hearts" aria-hidden="true"></div>
+
+  <header class="hero">
+    <h1>seberapa sering aku</h1>
+  </header>
+
+  <main class="grid" id="container"></main>
+
+  <footer class="footer">
+    For My Fineshyt 😛
+  </footer>
+
+  <script>
+    const data = [
+      { name: "Ngechat Duluan", level: 40, color: "#00d2d3" },
+      { name: "Marah", level: 100, color: "#ff6b6b" },
+      { name: "Minta Maaf ", level: 100, color: "#54a0ff" },
+      { name: "Bawel", level: 85, color: "#feca57" },
+      { name: "Bandel", level: 150, color: "#ff9ff3" },
+      { name: "Ga Angkat Telpon/Vc", level: 200, color: "#5f27cd" },
+      { name: "Minta Dibeliin Sesuatu", level: 25, color: "#1dd1a1" },
+      { name: "Cantik, manis, gemes, imut, Ndut 😛", level: 1000, color: "#ff4757" },
+      { name: "Overthinking", level: 60, color: "#c8d6e5" },
+      { name: "Cemburu", level: 80, color: "#10ac84" },
+      { name: "Bikin Cemburu", level: 50, color: "#ff9f43" },
+      { name: "Ngambek", level: 100, color: "#ee5253" },
+      { name: "Ngeblok", level: 0, color: "#222f3e" },
+      { name: "Ketawa", level: 50, color: "#f368e0" }
+    ];
+
+    const container = document.getElementById("container");
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    function mood(level){
+      if (level <= 0)   return { tag: "Kosong", emoji: "😶" };
+      if (level <= 30)  return { tag: "jarang", emoji: "🙂" };
+      if (level <= 60)  return { tag: "lumayan", emoji: "😊" };
+      if (level <= 90)  return { tag: "sering", emoji: "😳" };
+      if (level <= 100) return { tag: "sering banget", emoji: "🥺" };
+      return { tag: "MELEDAK!", emoji: "🤯" };
+    }
+
+    data.forEach((item, index) => {
+      const card = document.createElement("section");
+      card.className = "card";
+      card.style.setProperty("--liquid-color", item.color);
+
+      const isOverflow = item.level > 100;
+      const displayLevel = Math.min(item.level, 100);
+
+      const m = mood(item.level);
+
+      card.innerHTML = `
+        <div class="badge">${m.tag}</div>
+
+        <div class="bottle-wrapper">
+          ${isOverflow ? `<div class="fountain-container" id="fountain-${index}"></div>` : ""}
+          <div class="cap"></div>
+
+          <div class="bottle">
+            <div class="liquid" id="liquid-${index}"></div>
+          </div>
+        </div>
+
+        <div class="label ${item.level > 0 ? "active" : ""}">${item.name}</div>
+
+        <div class="meta">
+          <span class="percent">${item.level}%</span>
+          <span class="emoji" aria-hidden="true">${m.emoji}</span>
+        </div>
+
+        <div class="progress" role="progressbar" aria-valuenow="${displayLevel}" aria-valuemin="0" aria-valuemax="100">
+          <div class="bar" id="bar-${index}"></div>
+        </div>
+      `;
+
+      container.appendChild(card);
+
+      const delay = 240 + index * 85;
+      setTimeout(() => {
+        const liq = document.getElementById(`liquid-${index}`);
+        const bar = document.getElementById(`bar-${index}`);
+
+        liq.style.height = `${displayLevel}%`;
+        bar.style.width = `${displayLevel}%`;
+
+        if (isOverflow && !reduceMotion) startEruption(index);
+      }, delay);
+    });
+
+    function startEruption(index){
+      const fountain = document.getElementById(`fountain-${index}`);
+      if(!fountain) return;
+
+      const shapes = ["♥", "✦", "❣", "✿"];
+
+      const intervalId = setInterval(() => {
+        const drop = document.createElement("span");
+        drop.className = "droplet";
+        drop.textContent = shapes[(Math.random() * shapes.length) | 0];
+
+        const rand = Math.random();
+        let animName = "spurt-center";
+        if (rand < 0.33) animName = "spurt-left";
+        else if (rand < 0.66) animName = "spurt-right";
+
+        const duration = 0.65 + Math.random() * 0.55; // 0.65s - 1.2s
+        const size = 50 + Math.random() * 20;
+
+        drop.style.fontSize = `${size}px`;
+        drop.style.animation = `${animName} ${duration}s ease-out forwards`;
+
+        fountain.appendChild(drop);
+
+        setTimeout(() => drop.remove(), duration * 1000);
+      }, 110);
+
+    }
+
+    if(!reduceMotion){
+      const bg = document.getElementById("bg-hearts");
+      const palette = ["#ffffff", "#ffeaa7", "#ff9ff3", "#74b9ff", "#55efc4"];
+
+      setInterval(() => {
+        const h = document.createElement("span");
+        h.className = "float-heart";
+        h.textContent = Math.random() > 0.25 ? "❤" : "✨";
+
+        const left = Math.random() * 100;
+        const duration = 6 + Math.random() * 7; // 6-13s
+        const size = 12 + Math.random() * 18;
+        const drift = (Math.random() * 140 - 70) + "px";
+        const rot = (Math.random() * 180 - 90) + "deg";
+
+        h.style.left = left + "vw";
+        h.style.fontSize = size + "px";
+        h.style.color = palette[(Math.random() * palette.length) | 0];
+        h.style.setProperty("--drift", drift);
+        h.style.setProperty("--rot", rot);
+        h.style.animationDuration = duration + "s";
+
+        bg.appendChild(h);
+        setTimeout(() => h.remove(), duration * 1000);
+      }, 520);
+    }
+  </script>
+</body>
+</html>
